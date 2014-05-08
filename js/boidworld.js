@@ -5,7 +5,7 @@ var NUM_BOIDS = 40;
 
 WORLD_RADIUS = window.innerHeight/1.4;
 
-boids = []
+boids = [];
 
 init();
 animate();
