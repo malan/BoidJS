@@ -3,6 +3,10 @@ var geometry, material, mesh;
 
 var NUM_BOIDS = 40;
 
+WORLD_RADIUS = window.innerHeight/1.4;
+
+boids = []
+
 init();
 animate();
 
@@ -11,7 +15,6 @@ function randomVector() {
   return v.normalize()
 }
 
-
 function init() {
 
   scene = new THREE.Scene();
@@ -19,15 +22,13 @@ function init() {
   camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
   camera.position.z = 1000;
 
-  this.boids = [];
-  direction = randomVector();
 
   for(i=0;i<NUM_BOIDS;i++) {
-    boid = new Boid(this.boids);
-    this.boids.push(boid);
+    boid = new Boid();
+    boids.push(boid);
     scene.add( boid.mesh );
+    boid.position;
   }
-
 
   renderer = new THREE.CanvasRenderer();
   renderer.setSize( window.innerWidth, window.innerHeight );
@@ -37,17 +38,11 @@ function init() {
 }
 
 function animate() {
-
-  // note: three.js includes requestAnimationFrame shim
   requestAnimationFrame( animate );
 
-
-  direction.add(randomVector());
-
   for(i=0;i<boids.length;i++) {
-    boids[i].animate();
+    animateBoid(boids[i]);
   }
-
 
   renderer.render( scene, camera );
 }
