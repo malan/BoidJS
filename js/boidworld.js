@@ -1,6 +1,8 @@
 var scene, camera, renderer;
 var geometry, material, mesh;
 
+var NUM_BOIDS = 40;
+
 init();
 animate();
 
@@ -20,7 +22,7 @@ function init() {
   this.boids = [];
   direction = randomVector();
 
-  for(i=0;i<25;i++) {
+  for(i=0;i<NUM_BOIDS;i++) {
     boid = new Boid(this.boids);
     this.boids.push(boid);
     scene.add( boid.mesh );

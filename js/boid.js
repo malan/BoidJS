@@ -1,16 +1,22 @@
 var origin = new THREE.Vector3(0, 0, 0);
 
+var RANDOM    = 0.05,
+    INSIDE    = 0.05,
+    INSIDE_AT = 10,
+    GROUP     = 0.09,
+    AVOID     = 0.01,
+    AVOID_AT  = 50,
+    FOLLOW    = 0.02,
+    LOCAL     = 150;
+
 function Boid(boidVars) {
   this.boids = boidVars;
   this.mesh = initSphere();
 
-  this.direction = new THREE.Vector3();
+  this.direction = randomVector();
   this.position = randomVector().multiplyScalar(400);
 
-  this.moveForce = randomVector().multiplyScalar(1);
-  this.direction.add(this.moveForce);
-
-  this.speed = 3;
+  this.speed = 5;
 
   this.worldRadius = window.innerHeight/1.4;
 
@@ -37,19 +43,28 @@ Boid.prototype.animate = function() {
   this.move();
 };
 
+// Is another boid nearby
+Boid.prototype.isNearby = function(otherBoid) {
+  if (this.boids[k] == this)
+    return false;
+
+  distance = this.position.distanceTo(otherBoid.position);
+  return (distance < LOCAL);
+};
+
 //Move randomly
 Boid.prototype.moveRandomly = function() {
-  this.direction.add(randomVector().multiplyScalar(0.002));
+  this.direction.add(randomVector().multiplyScalar(RANDOM));
 };
 
 
 //Avoid the sphere
 Boid.prototype.stayInside = function() {
-  if(this.worldRadius - this.position.length() < 80) {
+  if(this.worldRadius - this.position.length() < INSIDE_AT) {
     //Head back to center
     toOriginForce = origin.clone().sub(this.position);
 
-    this.direction.add(toOriginForce.normalize().multiplyScalar(0.05));
+    this.direction.add(toOriginForce.normalize().multiplyScalar(INSIDE));
   }
 };
 
@@ -58,57 +73,68 @@ Boid.prototype.stayInside = function() {
 Boid.prototype.group = function() {
   //Direction to the center of the group
   boidCenter = new THREE.Vector3();
+  numBoids = 0;
 
   for(k=0;k<this.boids.length;k++) {
 
-    if(this.boids[k] == this)
-      continue;
-
-    boidCenter.add(boids[k].position);
+    if(this.isNearby(this.boids[k])) {
+      boidCenter.add(boids[k].position);
+      numBoids += 1;
+    }
   }
-  //Get the centoid of the group. Ignore this boid
-  boidCenter.divideScalar(boids.length-1);
 
-  toBoidCentroid = boidCenter.sub(this.position).normalize();
+  if (numBoids > 0) {
+    //Get the centoid of the group
+    boidCenter.divideScalar(numBoids);
 
-  this.direction.add(toBoidCentroid.multiplyScalar(0.35));
+    toBoidCentroid = boidCenter.sub(this.position).normalize();
+
+    this.direction.add(toBoidCentroid.multiplyScalar(GROUP));
+  }
 };
 
 
 //Force that makes Boids want to avoid each other
 Boid.prototype.avoid = function() {
   avoidBoids = new THREE.Vector3();
+  numBoids = 0;
 
   for(k=0;k<this.boids.length;k++) {
 
-    if(this.boids[k] == this)
-      continue;
+    if(this.isNearby(this.boids[k])) {
+      //Direction away from this boid
+      awayFromBoid = this.position.clone().sub(boids[k].position);
 
-    //Direction away from this boid
-    awayFromBoid = this.position.clone().sub(boids[k].position);
-
-    //Scale inverse of distance to boid
-    avoidBoids.add(awayFromBoid.divideScalar(this.position.distanceTo(boids[k].position)-80));
+      //Scale inverse of distance to boid
+      distance = this.position.distanceTo(boids[k].position);
+      avoidBoids.add(awayFromBoid.divideScalar(Math.abs(this.position.distanceTo(boids[k].position)-80)));
+      numBoids += 1;
+    }
   }
 
-   this.direction.add(avoidBoids.multiplyScalar(0.25).divideScalar(boids.length));
+  if (numBoids > 0) {
+    this.direction.add(avoidBoids.multiplyScalar(AVOID));
+  }
 };
 
 //Force that makes Boids want to flow in the same direction
 Boid.prototype.follow = function() {
   //Direction of boid group
   boidDirection = new THREE.Vector3();
+  numBoids = 0;
 
   for(k=0;k<this.boids.length;k++) {
 
-    if(this.boids[k] == this)
-      continue;
-
-    boidDirection.add(boids[k].direction.normalize());
+    if(this.isNearby(this.boids[k])) {
+      boidDirection.add(boids[k].direction.normalize());
+      numBoids += 1;
+    }
   }
   boidDirection.normalize();
 
-  this.direction.add(boidDirection.multiplyScalar(0.15));
+  if (numBoids > 0) {
+    this.direction.add(boidDirection.multiplyScalar(FOLLOW));
+  }
 };
 
 
