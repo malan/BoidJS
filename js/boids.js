@@ -1,13 +1,15 @@
 var origin = new THREE.Vector3(0, 0, 0);
 
-var RANDOM    = 0.05,
-    INSIDE    = 0.05,
+var INSIDE    = 0.05,
     INSIDE_AT = 10,
-    GROUP     = 0.09,
-    AVOID     = 0.01,
     AVOID_AT  = 50,
-    FOLLOW    = 0.02,
     LOCAL     = 150,
+
+    AVOID     = 0.01,
+    GROUP     = 0.09,
+    FOLLOW    = 0.02,
+
+    RANDOM    = 0.05,
     SPEED     = 5;
 
 function Boid() {
@@ -16,6 +18,25 @@ function Boid() {
   this.direction = randomVector();
   this.position = randomVector().multiplyScalar(400);
 }
+
+function initTriangle() {
+  var geometry = new THREE.Geometry();
+
+  geometry.vertices.push(
+    new THREE.Vector3( -10,  10, 0 ),
+    new THREE.Vector3( -10, -10, 0 ),
+    new THREE.Vector3(  10, -10, 0 )
+  );
+
+  geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
+
+  geometry.computeBoundingSphere();
+
+  var sphere = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+  sphere.overdraw = true;
+  return sphere;
+
+};
 
 function initSphere() {
   var sphere = new THREE.Mesh(new THREE.SphereGeometry(25, 5, 5), new THREE.MeshNormalMaterial());

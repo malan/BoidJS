@@ -1,7 +1,7 @@
 var scene, camera, renderer;
 var geometry, material, mesh;
 
-var NUM_BOIDS = 40;
+var NUM_BOIDS = 30;
 
 WORLD_RADIUS = window.innerHeight/1.4;
 
