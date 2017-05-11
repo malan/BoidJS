@@ -1,9 +1,15 @@
 var origin = new THREE.Vector3(0, 0, 0);
 
     
-var INSIDE    = 0.05, 
-    INSIDE_AT = 10, //How close to the outside of the world boids can get before being pulled back
-    LOCAL     = 150,
+var
+    //How hard boids avoid the outside of the world
+    INSIDE    = 0.05, 
+
+    //How close to the outside of the world boids can get before being pulled back
+    INSIDE_AT = 10, 
+
+    //Distance below which a boid is considered "local"
+    LOCAL     = 150, 
 
     //How hard boids try to avoid each other
     AVOID     = 0.01,
@@ -16,7 +22,7 @@ var INSIDE    = 0.05,
     RANDOM    = 0.05,
 
     //How fast the boids move
-    SPEED     = 2;
+    SPEED     = 5;
 
 //Create a single boid
 function Boid() {
