@@ -1,49 +1,77 @@
 var origin = new THREE.Vector3(0, 0, 0);
 
-var INSIDE    = 0.05,
-    INSIDE_AT = 10,
-    AVOID_AT  = 50,
+    
+var INSIDE    = 0.05, 
+    INSIDE_AT = 10, //How close to the outside of the world boids can get before being pulled back
     LOCAL     = 150,
 
+    //How hard boids try to avoid each other
     AVOID     = 0.01,
+    //How hard boids try to group together
     GROUP     = 0.09,
+    //How hard boids try to follow each other
     FOLLOW    = 0.02,
 
+    //How much boids move around randomly
     RANDOM    = 0.05,
-    SPEED     = 5;
 
+    //How fast the boids move
+    SPEED     = 2;
+
+//Create a single boid
 function Boid() {
-  this.mesh = initSphere();
+  //This defines what the boid will actually look like :-)
+  this.mesh = initCube(); //initCube();
 
+  //Sets the direction and position of the boid
   this.direction = randomVector();
   this.position = randomVector().multiplyScalar(400);
 }
 
-function initTriangle() {
-  var geometry = new THREE.Geometry();
+function ColourfulBoid() {
+  //This defines what the boid will actually look like :-)
+  this.mesh = initColourfulSphere(); //initCube();
 
-  geometry.vertices.push(
-    new THREE.Vector3( -10,  10, 0 ),
-    new THREE.Vector3( -10, -10, 0 ),
-    new THREE.Vector3(  10, -10, 0 )
-  );
+  //Sets the direction and position of the boid
+  this.direction = randomVector();
+  this.position = randomVector().multiplyScalar(400);
+}
 
-  geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
-
-  geometry.computeBoundingSphere();
-
-  var sphere = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
-  sphere.overdraw = true;
-  return sphere;
-
-};
-
+//Draw a Sphere Boid of a single colour
 function initSphere() {
-  var sphere = new THREE.Mesh(new THREE.SphereGeometry(25, 5, 5), new THREE.MeshNormalMaterial());
+  var sphereMaterial = new THREE.MeshNormalMaterial();
+  var sphereMaterial = new THREE.MeshBasicMaterial();
+
+  var sphere = new THREE.Mesh(new THREE.SphereGeometry(25, 5, 5), sphereMaterial);
+
+  sphere.material.color.setHex( 0xabcdef );
   sphere.overdraw = true;
   return sphere;
 };
 
+//Draw a Cube Boid of a single colour
+function initCube() {
+  var cubeMaterial = new THREE.MeshNormalMaterial();
+  var cubeMaterial = new THREE.MeshBasicMaterial();
+
+  var cube = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50), cubeMaterial);
+
+  cube.material.color.setHex( 0xabcdef );
+  cube.overdraw = true;
+  return cube;
+}
+
+
+//Draw a colourful Sphere boid!
+function initColourfulSphere() {
+  var sphereMaterial = new THREE.MeshNormalMaterial();
+
+  var sphere = new THREE.Mesh(new THREE.SphereGeometry(25, 5, 5), sphereMaterial);
+  sphere.overdraw = true;
+  return sphere;
+};
+
+//This groups together everything that makes the Boids flock
 function animateBoid(boid){
   boid.direction.normalize();
 
