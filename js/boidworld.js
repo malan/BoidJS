@@ -28,10 +28,10 @@ function init() {
   camera.position.z = 1000;
 
   //Add a single normal boid
-  boid = new Boid();
-  boids.push(boid);
-  scene.add( boid.mesh );
-  boid.position;
+  // boid = new Boid();
+  // boids.push(boid);
+  // scene.add( boid.mesh );
+  // boid.position;
 
   //Add a bunch of colourful boids
   for(i=0;i<NUM_BOIDS;i++) {
